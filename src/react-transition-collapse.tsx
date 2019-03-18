@@ -6,7 +6,7 @@ import * as React from 'react'
 
 class ReactTransitionCollapse extends React.PureComponent {
   render() {
-    return <div>React test</div>
+    return <div>React test, feat</div>
   }
 }
 
