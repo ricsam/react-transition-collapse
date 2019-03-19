@@ -2,9 +2,12 @@
 
 Performant animated accordion/collapse react component powered by css transitions and css transform.
 
+[1]: https://www.npmjs.com/package/react-transition-collapse
+[2]: https://img.shields.io/npm/v/react-transition-collapse.svg
+
 | npm | build |
 | ----|------ |
-| ![npm](https://img.shields.io/npm/v/react-transition-collapse.svg) | ![travis](https://travis-ci.org/ricsam/react-transition-collapse.svg?branch=master) |
+| [![npm][2]][1] | ![travis](https://travis-ci.org/ricsam/react-transition-collapse.svg?branch=master) |
 
 ### Installation
 ```bash
