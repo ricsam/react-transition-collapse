@@ -9,7 +9,7 @@
   "files": [
     "dist"
   ],
-  "author": "Richard Samuelsson <noobtoothfairy@gmail.com>",
+  "author": "Richard Samuelsson <ricsam@kth.com>",
   "repository": {
     "type": "git",
     "url": "https://github.com/ricsam/react-transition-collapse"

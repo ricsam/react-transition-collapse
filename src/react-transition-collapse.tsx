@@ -4,63 +4,144 @@
 
 import * as React from 'react'
 
-type styleType = {
-  transition: string
-  overflow: string
-  height: string
-}
-
-const wrapperStyle: styleType = {
-  transition: 'height 0.5s ease',
-  overflow: 'hidden',
+const innerBaseStyle = {
   height: 'auto'
 }
 
-type DomEl = null | HTMLDivElement
+const wrapperBaseStyle = {
+  transition: 'height 0.5s ease',
+  height: '0px',
+  overflow: 'hidden'
+}
 
-class ReactTransitionCollapse extends React.PureComponent<{
+type DomEl = null | HTMLElement
+
+type transitionProps = {
   expanded: boolean
   children: Element
-}> {
-  el: DomEl = null
+  duration?: number | string
+}
 
-  state = {
-    initialRender: true
-  }
+class ReactTransitionCollapse extends React.PureComponent<transitionProps> {
+  innerEl: DomEl = null
+  wrapperEl: DomEl = null
+  wrapperParentEl: DomEl | Node = null
+  height: number | null = null
+  detachReMeasureListeners: (() => void) | null = null
 
   componentDidMount() {
-    this.setState({
-      initialRender: false
+    this.detachReMeasureListeners = this.reMeasure()
+  }
+
+  getListener = (cb: () => void) => {
+    if (!(window as any).ResizeObserver) {
+      window.addEventListener('resize', cb)
+      return () => {
+        window.removeEventListener('resize', cb)
+      }
+    }
+    const ro = new (window as any).ResizeObserver(cb)
+    ro.observe(this.innerEl)
+    return () => {
+      ro.disconnect()
+    }
+  }
+
+  reMeasure = () => {
+    let timeout: NodeJS.Timeout
+    return this.getListener(() => {
+      if (
+        !this.wrapperEl ||
+        !this.wrapperParentEl ||
+        !this.wrapperParentEl.contains(this.wrapperEl)
+      ) {
+        return
+      }
+      clearTimeout(timeout)
+      timeout = setTimeout(() => {
+        this.measure(this.innerEl)
+        this.setHeight()
+      }, 500)
     })
   }
 
-  setHeight = (el: DomEl) => {
-    this.el = el
+  componentDidUpdate() {
+    this.setHeight()
+  }
 
+  updateInnerHeight = (height: number | null) => {
+    if (!this.wrapperEl || height === null) {
+      return
+    }
+    if (this.wrapperEl.style.height !== height + 'px') {
+      this.wrapperEl.style.height = height + 'px'
+    }
+  }
+
+  setHeight = () => {
+    if (this.props.expanded && this.wrapperEl) {
+      if (this.wrapperParentEl && !this.wrapperParentEl.contains(this.wrapperEl)) {
+        this.wrapperParentEl.appendChild(this.wrapperEl)
+        const reexec = () =>
+          requestAnimationFrame(() => {
+            if (
+              this.wrapperEl &&
+              this.wrapperParentEl &&
+              this.wrapperParentEl.contains(this.wrapperEl)
+            ) {
+              this.measure(this.innerEl)
+              this.updateInnerHeight(this.height)
+            } else {
+              reexec()
+            }
+          })
+        reexec()
+      } else {
+        this.measure(this.innerEl)
+        this.updateInnerHeight(this.height)
+      }
+    } else if (this.wrapperEl) {
+      this.updateInnerHeight(0)
+    }
+  }
+
+  transitionEnd = () => {
+    if (!this.props.expanded && this.wrapperParentEl && this.wrapperEl) {
+      this.wrapperParentEl.removeChild(this.wrapperEl)
+    }
+  }
+
+  measure = (el: DomEl) => {
     if (!el) {
       return
     }
+    this.innerEl = el
+    this.height = el.offsetHeight
+  }
 
-    this.setState({
-      height: el.offsetHeight
-    })
+  setWrapperEl = (el: DomEl) => {
+    this.wrapperEl = el
+    if (el) {
+      this.wrapperParentEl = el.parentNode
+    }
   }
 
   render() {
-    const { expanded, children } = this.props
-    const { initialRender } = this.state
+    const { children, duration } = this.props
 
-    const style = {
-      ...wrapperStyle
+    const wrapperStyle = {
+      ...wrapperBaseStyle
     }
 
-    if (!initialRender) {
-      style.height = ''
+    if (typeof duration === 'number' || typeof duration === 'string') {
+      wrapperStyle.transition = duration + 'ms ease'
     }
 
     return (
-      <div style={style} ref={this.setHeight}>
-        {children}
+      <div style={wrapperStyle} ref={this.setWrapperEl} onTransitionEnd={this.transitionEnd}>
+        <div style={innerBaseStyle} ref={this.measure}>
+          {children}
+        </div>
       </div>
     )
   }

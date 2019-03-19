@@ -3,5 +3,8 @@
     "tslint-config-standard",
     "tslint-config-prettier",
     "tslint-react"
-  ]
+  ],
+  "rules": {
+    "jsx-no-multiline-js": false
+  }
 }

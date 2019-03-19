@@ -7,8 +7,8 @@ const Index = () => {
   return (
     <>
       <button onClick={() => setExpanded(expanded => !expanded)}>Expand</button>
-      <div style={{ width: '300px' }}>
-        <ReactTransitionCollapse expanded={expanded}>
+      <div>
+        <ReactTransitionCollapse expanded={expanded} duration={200}>
           Lorem nostrud velit ullamco dolore exercitation consectetur occaecat enim laboris cillum
           incididunt ullamco ex. Adipisicing eu nulla anim laborum. Exercitation consequat anim
           culpa aute fugiat dolor in aliqua Lorem labore mollit anim id dolore. Sunt ut sunt duis
