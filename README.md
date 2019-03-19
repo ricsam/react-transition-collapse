@@ -6,7 +6,7 @@ npm install --save react-transition-collapse
 ```
 
 ```bash
-yarn add -D react-transition-collapse
+yarn add react-transition-collapse
 ```
 
 
