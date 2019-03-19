@@ -25,7 +25,6 @@ type transitionProps = {
 class ReactTransitionCollapse extends React.PureComponent<transitionProps> {
   innerEl: DomEl = null
   wrapperEl: DomEl = null
-  wrapperParentEl: DomEl | Node = null
   height: number | null = null
   detachReMeasureListeners: (() => void) | null = null
 
@@ -50,11 +49,7 @@ class ReactTransitionCollapse extends React.PureComponent<transitionProps> {
   reMeasure = () => {
     let timeout: NodeJS.Timeout
     return this.getListener(() => {
-      if (
-        !this.wrapperEl ||
-        !this.wrapperParentEl ||
-        !this.wrapperParentEl.contains(this.wrapperEl)
-      ) {
+      if (!this.wrapperEl || !this.wrapperEl.contains(this.innerEl)) {
         return
       }
       clearTimeout(timeout)
@@ -79,16 +74,15 @@ class ReactTransitionCollapse extends React.PureComponent<transitionProps> {
   }
 
   setHeight = () => {
-    if (this.props.expanded && this.wrapperEl) {
-      if (this.wrapperParentEl && !this.wrapperParentEl.contains(this.wrapperEl)) {
-        this.wrapperParentEl.appendChild(this.wrapperEl)
+    if (!this.innerEl || !this.wrapperEl) {
+      return
+    }
+    if (this.props.expanded) {
+      if (!this.wrapperEl.contains(this.innerEl)) {
+        this.wrapperEl.appendChild(this.innerEl)
         const reexec = () =>
           requestAnimationFrame(() => {
-            if (
-              this.wrapperEl &&
-              this.wrapperParentEl &&
-              this.wrapperParentEl.contains(this.wrapperEl)
-            ) {
+            if (this.wrapperEl && this.wrapperEl.contains(this.innerEl)) {
               this.measure(this.innerEl)
               this.updateInnerHeight(this.height)
             } else {
@@ -106,8 +100,8 @@ class ReactTransitionCollapse extends React.PureComponent<transitionProps> {
   }
 
   transitionEnd = () => {
-    if (!this.props.expanded && this.wrapperParentEl && this.wrapperEl) {
-      this.wrapperParentEl.removeChild(this.wrapperEl)
+    if (!this.props.expanded && this.wrapperEl && this.innerEl) {
+      this.wrapperEl.removeChild(this.innerEl)
     }
   }
 
@@ -121,9 +115,6 @@ class ReactTransitionCollapse extends React.PureComponent<transitionProps> {
 
   setWrapperEl = (el: DomEl) => {
     this.wrapperEl = el
-    if (el) {
-      this.wrapperParentEl = el.parentNode
-    }
   }
 
   render() {
