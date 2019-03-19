@@ -5,11 +5,17 @@
 import * as React from 'react'
 
 const innerBaseStyle = {
-  height: 'auto'
+  height: 'auto',
+  transitionProperty: 'transform',
+  transitionDuration: '0.5s',
+  transitionTimingFunction: 'ease',
+  transformOrigin: 'top'
 }
 
 const wrapperBaseStyle = {
-  transition: 'height 0.5s ease',
+  transitionProperty: 'height',
+  transitionDuration: '0.5s',
+  transitionTimingFunction: 'ease',
   height: '0px',
   overflow: 'hidden'
 }
@@ -20,9 +26,14 @@ type transitionProps = {
   expanded: boolean
   children: Element
   duration?: number | string
+  animationType?: 'scale' | 'translate'
 }
 
 class ReactTransitionCollapse extends React.PureComponent<transitionProps> {
+  static defaultProps = {
+    animationType: 'translate'
+  }
+
   innerEl: DomEl = null
   wrapperEl: DomEl = null
   height: number | null = null
@@ -71,6 +82,14 @@ class ReactTransitionCollapse extends React.PureComponent<transitionProps> {
     if (this.wrapperEl.style.height !== height + 'px') {
       this.wrapperEl.style.height = height + 'px'
     }
+    if (!this.height || !this.innerEl) {
+      return
+    }
+    if (this.props.animationType === 'scale') {
+      this.innerEl.style.transform = 'scaleY(' + height / this.height + ')'
+    } else {
+      this.innerEl.style.transform = 'translateY(-' + (this.height - height) + 'px)'
+    }
   }
 
   setHeight = () => {
@@ -100,7 +119,12 @@ class ReactTransitionCollapse extends React.PureComponent<transitionProps> {
   }
 
   transitionEnd = () => {
-    if (!this.props.expanded && this.wrapperEl && this.innerEl) {
+    if (
+      !this.props.expanded &&
+      this.wrapperEl &&
+      this.innerEl &&
+      this.wrapperEl.contains(this.innerEl)
+    ) {
       this.wrapperEl.removeChild(this.innerEl)
     }
   }
@@ -123,14 +147,18 @@ class ReactTransitionCollapse extends React.PureComponent<transitionProps> {
     const wrapperStyle = {
       ...wrapperBaseStyle
     }
+    const innerStyle = {
+      ...innerBaseStyle
+    }
 
     if (typeof duration === 'number' || typeof duration === 'string') {
-      wrapperStyle.transition = duration + 'ms ease'
+      wrapperStyle.transitionDuration = duration + 'ms'
+      innerStyle.transitionDuration = duration + 'ms'
     }
 
     return (
       <div style={wrapperStyle} ref={this.setWrapperEl} onTransitionEnd={this.transitionEnd}>
-        <div style={innerBaseStyle} ref={this.measure}>
+        <div style={innerStyle} ref={this.measure}>
           {children}
         </div>
       </div>
