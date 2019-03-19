@@ -1,8 +1,8 @@
 {
   "name": "react-transition-collapse",
   "version": "0.0.0-development",
-  "description": "",
-  "keywords": [],
+  "description": "Performant animated accordion/collapse react component powered by css transitions and css transform.",
+  "keywords": ["react", "accordion", "collapse", "drawer"],
   "main": "dist/react-transition-collapse.umd.js",
   "module": "dist/react-transition-collapse.es5.js",
   "typings": "dist/types/react-transition-collapse.d.ts",
