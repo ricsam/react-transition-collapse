@@ -60,7 +60,7 @@ class ReactTransitionCollapse extends React.PureComponent<transitionProps> {
   reMeasure = () => {
     let timeout: NodeJS.Timeout
     return this.getListener(() => {
-      if (!this.wrapperEl || !this.wrapperEl.contains(this.innerEl)) {
+      if (!this.wrapperEl || !this.innerEl || !this.wrapperEl.contains(this.innerEl)) {
         return
       }
       clearTimeout(timeout)
@@ -101,7 +101,7 @@ class ReactTransitionCollapse extends React.PureComponent<transitionProps> {
         this.wrapperEl.appendChild(this.innerEl)
         const reexec = () =>
           requestAnimationFrame(() => {
-            if (this.wrapperEl && this.wrapperEl.contains(this.innerEl)) {
+            if (this.wrapperEl && this.innerEl && this.wrapperEl.contains(this.innerEl)) {
               this.measure(this.innerEl)
               this.updateInnerHeight(this.height)
             } else {

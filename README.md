@@ -12,11 +12,12 @@ yarn add react-transition-collapse
 
 ### Usage
 
-ReactTransitionCollapse takes three props:
+ReactTransitionCollapse takes these props:
 ```
-expanded: boolean
-duration: number | string // number of milliseconds
 children: Element
+duration: number | string // number of milliseconds
+expanded: boolean
+animationType: 'scale' | 'translate' // which css transform should be applied to animate the transition
 ```
 
 #### Full example
