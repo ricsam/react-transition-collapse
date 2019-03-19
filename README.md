@@ -1,5 +1,9 @@
 # react-transition-collapse
 
+| npm | build |
+| ----|------ |
+| ![npm](https://img.shields.io/npm/v/react-transition-collapse.svg) | ![travis](https://travis-ci.org/ricsam/react-transition-collapse.svg?branch=master) |
+
 ### Installation
 ```bash
 npm install --save react-transition-collapse
