@@ -24,7 +24,7 @@ type DomEl = null | HTMLElement
 
 type transitionProps = {
   expanded: boolean
-  children: Element
+  children: React.ReactNode
   duration?: number | string
   animationType?: 'scale' | 'translate'
 }
